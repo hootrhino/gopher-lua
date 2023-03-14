@@ -11,13 +11,15 @@ import (
 )
 
 func mainLoop(L *LState, baseframe *callFrame) {
+	if L.stack == nil {
+		return
+	}
 	var inst uint32
 	var cf *callFrame
 
 	if L.stack.IsEmpty() {
 		return
 	}
-
 	L.currentFrame = L.stack.Last()
 	if L.currentFrame.Fn.IsG {
 		callGFunction(L, false)
@@ -35,6 +37,9 @@ func mainLoop(L *LState, baseframe *callFrame) {
 }
 
 func mainLoopWithContext(L *LState, baseframe *callFrame) {
+	if L.stack == nil {
+		return
+	}
 	var inst uint32
 	var cf *callFrame
 
@@ -49,18 +54,19 @@ func mainLoopWithContext(L *LState, baseframe *callFrame) {
 	}
 
 	for {
-		cf = L.currentFrame
-		inst = cf.Fn.Proto.Code[cf.Pc]
-		cf.Pc++
 		select {
 		case <-L.ctx.Done():
 			L.RaiseError(L.ctx.Err().Error())
 			return
 		default:
+			cf = L.currentFrame
+			inst = cf.Fn.Proto.Code[cf.Pc]
+			cf.Pc++
 			if jumpTable[int(inst>>26)](L, inst, baseframe) == 1 {
 				return
 			}
 		}
+
 	}
 }
 

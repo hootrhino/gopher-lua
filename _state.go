@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/yuin/gopher-lua/parse"
+	"github.com/i4de/gopher-lua/parse"
 )
 
 const MultRet = -1
@@ -647,7 +647,9 @@ func (ls *LState) raiseError(level int, format string, args ...interface{}) {
 		ls.reg.forceResize(ls.reg.Top() + 1)
 	}
 	ls.reg.Push(LString(message))
-	ls.Panic(ls)
+	// modified by wwhai
+	//    Necessary or no panic when error?
+	// ls.Panic(ls)
 }
 
 func (ls *LState) findLocal(frame *callFrame, no int) string {
@@ -686,7 +688,9 @@ func (ls *LState) where(level int, skipg bool) string {
 	}
 	line := ""
 	if proto != nil {
-		line = fmt.Sprintf("%v:", proto.DbgSourcePositions[cf.Pc-1])
+		if cf.Pc > 0 {
+			line = fmt.Sprintf("%v:", proto.DbgSourcePositions[cf.Pc-1])
+		}
 	}
 	return fmt.Sprintf("%v:%v", sourcename, line)
 }
@@ -1222,14 +1226,15 @@ func (ls *LState) IsClosed() bool {
 }
 
 func (ls *LState) Close() {
+	ls.interrupted = true
 	atomic.AddInt32(&ls.stop, 1)
 	for _, file := range ls.G.tempFiles {
 		// ignore errors in these operations
 		file.Close()
 		os.Remove(file.Name())
 	}
-	ls.stack.FreeAll()
 	ls.stack = nil
+	runtime.GC()
 }
 
 /* registry operations {{{ */
