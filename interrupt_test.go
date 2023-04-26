@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// go test -timeout 30s -run ^Test_loop_close github.com/i4de/rulex/test -v -count=1
+// go test -timeout 30s -run ^Test_loop_close github.com/hootrhino/rulex/test -v -count=1
 func Benchmark_Test_loop_close(b *testing.B) {
 	var s1 = `
 	function f()

@@ -2,7 +2,7 @@
 package parse
 
 import (
-  "github.com/i4de/gopher-lua/ast"
+  "github.com/hootrhino/gopher-lua/ast"
 )
 %}
 %type<stmts> chunk
