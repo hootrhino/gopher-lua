@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/i4de/gopher-lua/parse"
+	"github.com/hootrhino/gopher-lua/parse"
 )
 
 const maxMemory = 40

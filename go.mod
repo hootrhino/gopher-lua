@@ -1,4 +1,4 @@
-module github.com/i4de/gopher-lua
+module github.com/hootrhino/gopher-lua
 
 go 1.17
 
